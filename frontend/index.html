@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prueba final Docker</title>
+</head>
+<body>
+  <h1>Prueba final Docker - cambio de develop</h1>
+
+  <p id="mensaje">Cargando backend...</p>
+
+  <script>
+    fetch('/api')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('mensaje').innerText = data.mensaje;
+      })
+      .catch(() => {
+        document.getElementById('mensaje').innerText =
+          'No se pudo conectar con el backend';
+      });
+  </script>
+</body>
+</html>

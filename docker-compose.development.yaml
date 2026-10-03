@@ -1,0 +1,52 @@
+name: docker-prueba
+
+services:
+  database:
+    extends:
+      file: docker-compose.production.yaml
+      service: database
+    image: ${REPOSITORIO}/database:development
+    build:
+      context: ./database
+
+  backend:
+    extends:
+      file: docker-compose.production.yaml
+      service: backend
+    image: ${REPOSITORIO}/backend:development
+    build:
+      context: ./backend
+      target: development
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - ./backend:/backend
+      - datos_compartidos:/compartido
+
+  frontend:
+    extends:
+      file: docker-compose.production.yaml
+      service: frontend
+    image: ${REPOSITORIO}/frontend:development
+    build:
+      context: ./frontend
+      target: development
+    command: sh -c "npm install && npm start"
+    volumes:
+      - ./frontend:/frontend
+
+  proxy:
+    extends:
+      file: docker-compose.production.yaml
+      service: proxy
+    image: ${REPOSITORIO}/proxy:development
+    build:
+      context: ./proxy
+    environment:
+      - PUERTO_FRONTEND=4200
+
+networks:
+  red_front:
+  red_data:
+
+volumes:
+  datos_compartidos:

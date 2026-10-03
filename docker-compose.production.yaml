@@ -1,0 +1,57 @@
+name: docker-prueba
+
+services:
+  database:
+    image: ${REPOSITORIO}/database:latest
+    container_name: database
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+    networks:
+      - red_data
+    volumes:
+      - datos_compartidos:/compartido
+
+  backend:
+    image: ${REPOSITORIO}/backend:latest
+    container_name: backend
+    env_file:
+      - .env
+    environment:
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGHOST=${PGHOST}
+    networks:
+      - red_front
+      - red_data
+    volumes:
+      - datos_compartidos:/compartido
+
+  frontend:
+    image: ${REPOSITORIO}/frontend:latest
+    container_name: frontend
+    networks:
+      - red_front
+
+  proxy:
+    image: ${REPOSITORIO}/proxy:latest
+    container_name: proxy
+    networks:
+      - red_front
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+
+networks:
+  red_front:
+  red_data:
+
+volumes:
+  datos_compartidos:
